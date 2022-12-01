@@ -1,0 +1,19 @@
+.App {
+  padding: 1em;
+}
+
+h1 {
+  text-align: center;
+}
+
+summary {
+  display: flex;
+}
+
+.enabled {
+  padding: 1em;
+}
+
+.name {
+  padding: 1em;
+}

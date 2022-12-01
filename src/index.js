@@ -4,23 +4,21 @@ const { isEnabled, loadMod, cleanName, isModFolder } = require("./utils.js");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
-
+const isDev = require("electron-is-dev");
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
 function getModList() {
-  let files = fs.readdirSync(
-    path.join(os.homedir(), DEFAULT_FOLDER["MACOS"])
-  );
+  let files = fs.readdirSync(path.join(os.homedir(), DEFAULT_FOLDER["MACOS"]));
 
   files = files.filter((f) => !SKIP_LIST.includes(f));
   const mods = files.map((f) => {
     const filepath = path.join(os.homedir(), DEFAULT_FOLDER["MACOS"], f);
     const isMod = isModFolder(filepath);
     let manifest;
-    if(isMod) {
+    if (isMod) {
       manifest = loadMod(filepath);
     }
     return {
@@ -28,7 +26,7 @@ function getModList() {
       enabled: isEnabled(f),
       filepath,
       isMod,
-      manifest
+      manifest,
     };
   });
   // mods.forEach(mod => {
@@ -53,7 +51,11 @@ const createWindow = () => {
   ipcMain.handle("getMods", () => getModList());
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, "index.html"));
+  mainWindow.loadURL(
+    isDev
+      ? "http://localhost:3000"
+      : `file://${(path.join(__dirname), "build", "index.html")}`
+  );
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
